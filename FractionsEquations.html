@@ -287,23 +287,6 @@
                         Result is <span class="text-purple-600">8/2</span>
                      </div>
                 </div>
-
-                <!-- Step 4: Final Simplify -->
-                <div class="mt-4 bg-purple-100 p-4 rounded-xl w-full text-center border-2 border-purple-200">
-                    <p class="font-bold text-purple-800 mb-2">Last Step: Simplify</p>
-                    <p class="text-lg mb-2">The line means <strong>DIVIDE</strong>.</p>
-                    
-                    <div class="bg-white p-3 rounded-lg inline-block mb-2 shadow-sm border border-purple-100">
-                        <span class="text-gray-500">Top</span> 
-                        <span class="font-bold text-xl mx-1 text-purple-600">÷</span> 
-                        <span class="text-gray-500">Bottom</span>
-                    </div>
-
-                    <div class="text-xl">
-                        8 ÷ 2 = <span class="text-4xl font-bold text-purple-600">4</span>
-                    </div>
-                    <p class="text-sm text-gray-600 mt-2 font-bold">(Because four 2s make 8)</p>
-                </div>
             </div>
 
             <div class="mt-auto pt-2 pb-8">
@@ -311,7 +294,7 @@
             </div>
         </div>
 
-        <!-- Question Template (Repeated 10 times via JS) -->
+        <!-- Question Template (Repeated 20 times via JS) -->
         <div id="question-container"></div>
 
         <!-- Completion Screen -->
@@ -320,7 +303,7 @@
             <p class="text-xl">You finished the assignment.</p>
             <div class="w-full bg-yellow-50 border-2 border-yellow-200 p-6 rounded-xl">
                 <p class="text-lg">Score:</p>
-                <div id="final-score" class="text-4xl font-bold text-purple-600 my-2">0 / 10</div>
+                <div id="final-score" class="text-4xl font-bold text-purple-600 my-2">0 / 20</div>
             </div>
             
             <button onclick="downloadPDF()" class="btn-game bg-pastel-purple text-gray-800 font-bold py-4 px-8 rounded-xl text-xl hover:bg-purple-200 w-full flex items-center justify-center">
@@ -335,7 +318,8 @@
         // --- Game State ---
         let currentStep = 0;
         let score = 0;
-        const totalSteps = 4 + 10 + 1; 
+        // 4 intro steps + 20 questions + 1 completion
+        const totalSteps = 4 + 20 + 1; 
         
         // --- Accordion Logic ---
         function toggleAccordion(id) {
@@ -356,86 +340,206 @@
             }
         }
         
-        // --- Data: 10 Questions ---
+        // --- Data: 20 Questions ---
         const questions = [
+            // Question 1
             {
                 id: 5,
                 title: "Question 1",
                 text: "Look at the fraction <strong class='text-2xl'>3/4</strong>.<br>Which number is the <strong>Numerator</strong> (the top number)?",
+                rule: "Rule: Numerator is the Top Number. Denominator is the Bottom Number.",
                 options: ["3", "4"],
                 correct: 0,
                 color: "bg-pastel-blue"
             },
+            // Question 2
             {
                 id: 6,
                 title: "Question 2",
                 text: "Look at the fraction <strong class='text-2xl'>1/8</strong>.<br>Which number is the <strong>Denominator</strong> (the bottom number)?",
+                rule: "Rule: Numerator is the Top Number. Denominator is the Bottom Number.",
                 options: ["1", "8"],
                 correct: 1,
                 color: "bg-pastel-blue"
             },
+            // Question 3
             {
                 id: 7,
                 title: "Question 3",
                 text: "Let's <strong>Add</strong>.<br><div class='text-3xl my-2 font-bold'>2/7 + 3/7</div><br>Remember: Add the top. Keep the bottom.",
+                rule: "Rule: Add the Top numbers. Keep the Bottom number.",
                 options: ["5/7", "5/14"],
                 correct: 0,
                 color: "bg-pastel-red"
             },
+            // Question 4
             {
                 id: 8,
                 title: "Question 4",
                 text: "Let's <strong>Add</strong>.<br><div class='text-3xl my-2 font-bold'>1/5 + 1/5</div><br>Tip: 1 + 1 = ?",
+                rule: "Rule: Add the Top numbers. Keep the Bottom number.",
                 options: ["2/10", "2/5"],
                 correct: 1,
                 color: "bg-pastel-red"
             },
+            // Question 5
             {
                 id: 9,
                 title: "Question 5",
                 text: "Let's <strong>Subtract</strong>.<br><div class='text-3xl my-2 font-bold'>5/9 - 1/9</div><br>Tip: Only change the top number.",
+                rule: "Rule: Subtract the Top numbers. Keep the Bottom number.",
                 options: ["4/9", "6/9"],
                 correct: 0,
                 color: "bg-pastel-green"
             },
+            // Question 6
             {
                 id: 10,
                 title: "Question 6",
                 text: "Let's <strong>Multiply</strong>.<br><div class='text-3xl my-2 font-bold'>1/2 × 1/3</div><br>Tip: Go straight across. 1×1 on top, 2×3 on bottom.",
+                rule: "Rule: Multiply Straight Across (Top × Top, Bottom × Bottom).",
                 options: ["1/6", "2/5"],
                 correct: 0,
                 color: "bg-pastel-yellow"
             },
+            // Question 7
             {
                 id: 11,
                 title: "Question 7",
                 text: "Let's <strong>Multiply</strong>.<br><div class='text-3xl my-2 font-bold'>2/3 × 2/3</div><br>Tip: Top × Top. Bottom × Bottom.",
+                rule: "Rule: Multiply Straight Across (Top × Top, Bottom × Bottom).",
                 options: ["4/6", "4/9"],
                 correct: 1,
                 color: "bg-pastel-yellow"
             },
+            // Question 8
             {
                 id: 12,
                 title: "Question 8",
                 text: "Division Rule.<br>What do we do to the <strong>Second Fraction</strong>?",
+                rule: "Rule: Division = K.S.F. (Keep, Switch, Flip)",
                 options: ["Keep it the same", "Flip it (Turn it upside down)"],
                 correct: 1,
                 color: "bg-pastel-orange"
             },
+            // Question 9
             {
                 id: 13,
                 title: "Question 9",
                 text: "Let's practice the <strong>Flip</strong>.<br>If we flip <strong class='text-xl'>3/4</strong>, what does it become?",
+                rule: "Rule: Flip means turn the second fraction upside down.",
                 options: ["3/4", "4/3"],
                 correct: 1,
                 color: "bg-pastel-orange"
             },
+            // Question 10 (NEW - Division)
             {
                 id: 14,
                 title: "Question 10",
-                text: "Final Challenge!<br>Solve: <strong class='text-xl'>2/5 + 1/5</strong>",
-                options: ["3/10", "3/5"],
-                correct: 1,
+                text: "Let's <strong>Divide</strong>.<br><div class='text-3xl my-2 font-bold'>1/2 ÷ 1/2</div>",
+                rule: "Rule: Keep, Switch, Flip. Then Multiply.",
+                options: ["1", "4"],
+                correct: 0,
+                color: "bg-pastel-purple"
+            },
+            // Question 11 (NEW - Division)
+            {
+                id: 15,
+                title: "Question 11",
+                text: "Let's <strong>Divide</strong>.<br><div class='text-3xl my-2 font-bold'>1/3 ÷ 1/3</div>",
+                rule: "Rule: Keep, Switch, Flip. Then Multiply.",
+                options: ["1", "3"],
+                correct: 0,
+                color: "bg-pastel-purple"
+            },
+            // Question 12 (NEW - Subtract)
+            {
+                id: 16,
+                title: "Question 12",
+                text: "Let's <strong>Subtract</strong>.<br><div class='text-3xl my-2 font-bold'>7/8 - 2/8</div><br>Tip: 7 - 2 = ?",
+                rule: "Rule: Subtract the Top numbers. Keep the Bottom number.",
+                options: ["5/8", "9/8"],
+                correct: 0,
+                color: "bg-pastel-green"
+            },
+            // Question 13 (NEW - Multiply)
+            {
+                id: 17,
+                title: "Question 13",
+                text: "Let's <strong>Multiply</strong>.<br><div class='text-3xl my-2 font-bold'>1/4 × 1/2</div><br>Tip: Straight across.",
+                rule: "Rule: Multiply Straight Across (Top × Top, Bottom × Bottom).",
+                options: ["1/8", "2/6"],
+                correct: 0,
+                color: "bg-pastel-yellow"
+            },
+            // Question 14 (NEW - Division)
+            {
+                id: 18,
+                title: "Question 14",
+                text: "<strong>Divide</strong> using K.S.F.<br><div class='text-3xl my-2 font-bold'>1/4 ÷ 1/8</div>",
+                rule: "Rule: Keep, Switch, Flip. (8 divided by 4 is...)",
+                options: ["2", "32"],
+                correct: 0,
+                color: "bg-pastel-orange"
+            },
+            // Question 15 (NEW - Addition)
+            {
+                id: 19,
+                title: "Question 15",
+                text: "Let's <strong>Add</strong>.<br><div class='text-3xl my-2 font-bold'>3/10 + 4/10</div>",
+                rule: "Rule: Add the Top numbers. Keep the Bottom number.",
+                options: ["7/10", "7/20"],
+                correct: 0,
+                color: "bg-pastel-red"
+            },
+            // Question 16 (NEW - Division)
+            {
+                id: 20,
+                title: "Question 16",
+                text: "<strong>Divide</strong> using K.S.F.<br><div class='text-3xl my-2 font-bold'>1/5 ÷ 1/10</div>",
+                rule: "Rule: Keep, Switch, Flip. (10 divided by 5 is...)",
+                options: ["2", "50"],
+                correct: 0,
+                color: "bg-pastel-orange"
+            },
+            // Question 17 (NEW - Subtract)
+            {
+                id: 21,
+                title: "Question 17",
+                text: "Let's <strong>Subtract</strong>.<br><div class='text-3xl my-2 font-bold'>6/7 - 2/7</div>",
+                rule: "Rule: Subtract the Top numbers. Keep the Bottom number.",
+                options: ["4/7", "8/7"],
+                correct: 0,
+                color: "bg-pastel-green"
+            },
+             // Question 18 (NEW - Multiply)
+            {
+                id: 22,
+                title: "Question 18",
+                text: "Let's <strong>Multiply</strong>.<br><div class='text-3xl my-2 font-bold'>3/4 × 1/2</div>",
+                rule: "Rule: Multiply Straight Across (Top × Top, Bottom × Bottom).",
+                options: ["3/8", "4/6"],
+                correct: 0,
+                color: "bg-pastel-yellow"
+            },
+            // Question 19 (NEW - Division)
+            {
+                id: 23,
+                title: "Question 19",
+                text: "<strong>Divide</strong>.<br><div class='text-3xl my-2 font-bold'>1/2 ÷ 1/6</div>",
+                rule: "Rule: Keep, Switch, Flip. Then Multiply.",
+                options: ["3", "1/12"],
+                correct: 0,
+                color: "bg-pastel-orange"
+            },
+            // Question 20 (NEW - Final Challenge)
+            {
+                id: 24,
+                title: "Question 20 (Final Challenge)",
+                text: "<strong>Challenge:</strong> Divide.<br><div class='text-4xl my-2 font-bold text-purple-600'>1/2 ÷ 1/10</div>",
+                rule: "Rule: Keep, Switch, Flip. (10 divided by 2 is...)",
+                options: ["5", "20"],
+                correct: 0,
                 color: "bg-pastel-purple"
             }
         ];
@@ -454,8 +558,15 @@
                 const div = document.createElement('div');
                 div.id = `step-${q.id}`;
                 div.className = 'step-content hidden p-8 flex-col h-full space-y-6';
+                
+                // ADDED: The Rule Box at the top of the question card
                 div.innerHTML = `
-                    <div class="${q.color} p-2 rounded-t-xl text-center font-bold">Question ${index + 1} of 10</div>
+                    <div class="${q.color} p-2 rounded-t-xl text-center font-bold">Question ${index + 1} of 20</div>
+                    
+                    <div class="bg-gray-50 border-l-4 border-gray-400 p-3 w-full rounded text-sm md:text-base mb-2 shadow-sm">
+                        <strong class="text-gray-600">REMEMBER:</strong><br> ${q.rule}
+                    </div>
+
                     <h2 class="text-xl text-center leading-relaxed">${q.text}</h2>
                     
                     <div class="grid grid-cols-1 gap-4 mt-4 w-full">
@@ -496,12 +607,13 @@
         function updateProgress() {
             // Mapping steps to progress percentage
             // Steps 0-4 are Intro (20%)
-            // Steps 5-14 are Questions (80%)
+            // Steps 5-24 are Questions (80%)
             let pct = 0;
             if (currentStep <= 4) {
                 pct = (currentStep / 4) * 20;
-            } else if (currentStep <= 14) {
-                pct = 20 + ((currentStep - 4) / 10) * 80;
+            } else if (currentStep <= 24) {
+                // (currentStep - 4) gives us 1 to 20
+                pct = 20 + ((currentStep - 4) / 20) * 80;
             } else {
                 pct = 100;
             }
@@ -529,7 +641,9 @@
 
             // Auto advance after short delay
             setTimeout(() => {
-                if (stepId < 14) {
+                // IMPORTANT: Update this limit when adding questions!
+                // Last question ID is 24
+                if (stepId < 24) {
                     nextStep(stepId + 1);
                 } else {
                     showCompletion();
@@ -542,7 +656,7 @@
             const finalEl = document.getElementById('step-completion');
             finalEl.classList.remove('hidden');
             finalEl.classList.add('flex');
-            document.getElementById('final-score').textContent = `${score} / 10`;
+            document.getElementById('final-score').textContent = `${score} / 20`;
             document.getElementById('progress-fill').style.width = '100%';
         }
 
@@ -588,7 +702,7 @@
             
             doc.setFontSize(18);
             doc.setTextColor(100, 100, 200);
-            doc.text(`Final Score: ${score} / 10`, 105, 145, { align: "center" });
+            doc.text(`Final Score: ${score} / 20`, 105, 145, { align: "center" });
 
             // Encouragement
             doc.setFontSize(14);
