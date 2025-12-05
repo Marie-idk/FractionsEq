@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabriel's Fraction Adventure</title>
+    <!-- Tailwind CSS for layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Quicksand for high readability -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        /* Pastel Rainbow Palette */
+        .bg-pastel-red { background-color: #ffb3ba; }
+        .bg-pastel-orange { background-color: #ffdfba; }
+        .bg-pastel-yellow { background-color: #ffffba; }
+        .bg-pastel-green { background-color: #baffc9; }
+        .bg-pastel-blue { background-color: #bae1ff; }
+        .bg-pastel-purple { background-color: #e6c9ff; }
+
+        .btn-game {
+            transition: all 0.2s;
+            border-bottom: 4px solid rgba(0,0,0,0.1);
+        }
+        .btn-game:active {
+            transform: translateY(2px);
+            border-bottom: 0px;
+        }
+
+        /* Card Container - Compact width */
+        .game-card {
+            max-width: 600px;
+            width: 95%;
+            margin: 0 auto;
+            min-height: 500px;
+        }
+
+        /* Large Touch Targets for Motor Support */
+        .answer-btn {
+            min-height: 60px;
+            font-size: 1.25rem;
+        }
+
+        /* Accordion Styles */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 200px; /* arbitrary large height */
+        }
+        .arrow-icon {
+            transition: transform 0.3s;
+        }
+        .arrow-icon.rotate {
+            transform: rotate(180deg);
+        }
+
+        /* Progress Bar Transition */
+        #progress-fill {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
+
+    <!-- Header -->
+    <header class="mb-6 text-center">
+        <h1 class="text-3xl font-bold text-gray-700 mb-2">Gabriel's Math Quest</h1>
+        <div class="w-full bg-gray-200 rounded-full h-4 max-w-[600px] mx-auto border-2 border-gray-300">
+            <div id="progress-fill" class="bg-pastel-green h-full rounded-full" style="width: 0%"></div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main id="game-container" class="game-card bg-white rounded-3xl shadow-xl overflow-hidden relative flex flex-col">
+        
+        <!-- Welcome Screen -->
+        <div id="step-0" class="step-content p-8 flex flex-col items-center justify-center h-full text-center space-y-6">
+            <div class="w-24 h-24 bg-pastel-blue rounded-full flex items-center justify-center text-4xl mb-4">👋</div>
+            <h2 class="text-2xl font-bold">Hello, Gabriel!</h2>
+            <p class="text-lg">We are going to learn about <strong>Fractions</strong> today.</p>
+            <p class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-300 text-left w-full">
+                <strong>Rule:</strong> Read the steps carefully. Take your time.
+            </p>
+            <button onclick="nextStep(1)" class="btn-game bg-pastel-green text-gray-700 font-bold py-4 px-12 rounded-xl text-xl hover:bg-green-200 w-full md:w-auto">
+                Start Assignment
+            </button>
+        </div>
+
+        <!-- Lesson 1: Parts of a Fraction -->
+        <div id="step-1" class="step-content hidden p-8 flex-col h-full space-y-4">
+            <div class="bg-pastel-purple p-2 rounded-t-xl text-center font-bold">Concept 1</div>
+            <h2 class="text-2xl font-bold text-center">Parts of a Fraction</h2>
+            
+            <div class="flex justify-center items-center space-x-4 my-6 text-4xl font-bold">
+                <div class="flex flex-col items-center">
+                    <span class="text-pastel-red p-2 bg-red-50 rounded">1</span>
+                    <div class="w-12 h-1 bg-gray-700 my-1"></div>
+                    <span class="text-pastel-blue p-2 bg-blue-50 rounded">2</span>
+                </div>
+            </div>
+
+            <ul class="space-y-4 text-lg">
+                <li class="flex items-start">
+                    <span class="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold flex-shrink-0">1</span>
+                    <span>The <strong>Top Number</strong> is the <span class="text-red-500 font-bold">Numerator</span>. It shows how many parts we have.</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold flex-shrink-0">2</span>
+                    <span>The <strong>Bottom Number</strong> is the <span class="text-blue-500 font-bold">Denominator</span>. It shows the total parts.</span>
+                </li>
+            </ul>
+
+            <div class="mt-auto pt-4">
+                <button onclick="nextStep(2)" class="btn-game bg-pastel-blue w-full py-4 rounded-xl font-bold text-xl hover:bg-blue-200">Next Concept ➜</button>
+            </div>
+        </div>
+
+        <!-- Lesson 2: Adding -->
+        <div id="step-2" class="step-content hidden p-8 flex-col h-full space-y-4">
+            <div class="bg-pastel-red p-2 rounded-t-xl text-center font-bold">Concept 2</div>
+            <h2 class="text-2xl font-bold text-center">Adding Fractions</h2>
+            
+            <p class="text-center italic text-gray-500">When the bottom numbers are the same...</p>
+
+            <div class="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-200 space-y-4">
+                <p><strong>Step 1:</strong> Add the top numbers.</p>
+                <p><strong>Step 2:</strong> Keep the bottom number the same.</p>
+            </div>
+
+            <div class="flex justify-center items-center text-2xl font-bold my-4">
+                <div class="text-center">
+                    <div>1</div><div class="h-0.5 w-8 bg-black mx-auto"></div><div>5</div>
+                </div>
+                <div class="mx-2">+</div>
+                <div class="text-center">
+                    <div>2</div><div class="h-0.5 w-8 bg-black mx-auto"></div><div>5</div>
+                </div>
+                <div class="mx-2">=</div>
+                <div class="text-center bg-green-100 p-2 rounded">
+                    <div class="text-green-600">3</div><div class="h-0.5 w-8 bg-black mx-auto"></div><div>5</div>
+                </div>
+            </div>
+            
+            <p class="text-center text-sm">We added 1 + 2 = 3. The 5 stayed the same.</p>
+
+            <div class="mt-auto pt-4">
+                <button onclick="nextStep(3)" class="btn-game bg-pastel-blue w-full py-4 rounded-xl font-bold text-xl hover:bg-blue-200">Next Concept ➜</button>
+            </div>
+        </div>
+
+        <!-- Lesson 3: Multiplying -->
+        <div id="step-3" class="step-content hidden p-8 flex-col h-full space-y-4">
+            <div class="bg-pastel-yellow p-2 rounded-t-xl text-center font-bold">Concept 3</div>
+            <h2 class="text-2xl font-bold text-center">Multiplying Fractions</h2>
+            
+            <p class="text-center">This is the easiest one! Think of <strong>train tracks</strong>.</p>
+
+            <div class="bg-blue-50 p-6 rounded-xl border-2 border-blue-200 space-y-4">
+                <p><strong>Rule:</strong> Go straight across.</p>
+                <p>Top × Top</p>
+                <p>Bottom × Bottom</p>
+            </div>
+
+            <div class="flex justify-center items-center text-2xl font-bold my-4 bg-gray-100 p-4 rounded-xl">
+                <div class="text-center">
+                    <div>1</div><div class="h-0.5 w-8 bg-black mx-auto"></div><div>2</div>
+                </div>
+                <div class="mx-2">×</div>
+                <div class="text-center">
+                    <div>1</div><div class="h-0.5 w-8 bg-black mx-auto"></div><div>3</div>
+                </div>
+                <div class="mx-2">=</div>
+                <div class="text-center">
+                    <div>1</div><div class="h-0.5 w-8 bg-black mx-auto"></div><div>6</div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-4">
+                <button onclick="nextStep(4)" class="btn-game bg-pastel-blue w-full py-4 rounded-xl font-bold text-xl hover:bg-blue-200">Next Concept ➜</button>
+            </div>
+        </div>
+
+        <!-- Lesson 4: Dividing -->
+        <div id="step-4" class="step-content hidden p-8 flex-col h-full space-y-4 overflow-y-auto">
+            <div class="bg-pastel-orange p-2 rounded-t-xl text-center font-bold">Concept 4</div>
+            <h2 class="text-2xl font-bold text-center">Dividing Fractions</h2>
+            
+            <p class="text-center font-bold text-gray-600 mb-2">Tap each button to learn the rule.</p>
+
+            <!-- Accordion Section -->
+            <div class="space-y-3 w-full">
+                
+                <!-- KEEP Accordion -->
+                <div class="border-2 border-green-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleAccordion('acc-keep')" class="w-full bg-green-50 p-4 flex justify-between items-center text-left btn-game">
+                        <span class="font-bold text-xl text-green-800">1. KEEP</span>
+                        <span id="icon-acc-keep" class="arrow-icon text-2xl">▼</span>
+                    </button>
+                    <div id="acc-keep" class="accordion-content bg-white">
+                        <div class="p-4 text-lg">
+                            <p><strong>Keep WHAT?</strong></p>
+                            <p class="mt-1">Keep the <span class="text-green-600 font-bold">First Fraction</span> exactly the same.</p>
+                            <p class="mt-2 text-sm text-gray-500">Do not touch the first fraction!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWITCH Accordion -->
+                <div class="border-2 border-yellow-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleAccordion('acc-switch')" class="w-full bg-yellow-50 p-4 flex justify-between items-center text-left btn-game">
+                        <span class="font-bold text-xl text-yellow-800">2. SWITCH</span>
+                        <span id="icon-acc-switch" class="arrow-icon text-2xl">▼</span>
+                    </button>
+                    <div id="acc-switch" class="accordion-content bg-white">
+                        <div class="p-4 text-lg">
+                            <p><strong>Switch WHAT?</strong></p>
+                            <p class="mt-1">Switch the <span class="font-bold">Symbol</span>.</p>
+                            <p class="mt-1">Change Divide (÷) to Multiply (×).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLIP Accordion -->
+                <div class="border-2 border-red-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleAccordion('acc-flip')" class="w-full bg-red-50 p-4 flex justify-between items-center text-left btn-game">
+                        <span class="font-bold text-xl text-red-800">3. FLIP</span>
+                        <span id="icon-acc-flip" class="arrow-icon text-2xl">▼</span>
+                    </button>
+                    <div id="acc-flip" class="accordion-content bg-white">
+                        <div class="p-4 text-lg">
+                            <p><strong>Flip WHAT?</strong></p>
+                            <p class="mt-1">Flip the <span class="text-red-500 font-bold">Second Fraction</span> upside down.</p>
+                            <p class="mt-1">Example: <span class="font-bold">1/8</span> becomes <span class="font-bold text-red-500">8/1</span>.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Detailed Example Math -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-300 flex flex-col items-center w-full mt-4">
+                <p class="font-bold mb-3 w-full text-left border-b pb-2">Example: 1/2 ÷ 1/8</p>
+                
+                <!-- Step 1: The Setup -->
+                <div class="flex items-center text-xl font-bold mb-2">
+                    <span class="mr-2 text-gray-500 text-sm">Start:</span>
+                    <div class="text-center"><div class="text-green-600">1</div><div class="h-0.5 w-6 bg-black mx-auto"></div><div>2</div></div>
+                    <div class="mx-2">÷</div>
+                    <div class="text-center"><div class="text-red-500">1</div><div class="h-0.5 w-6 bg-black mx-auto"></div><div>8</div></div>
+                </div>
+
+                <!-- Arrow -->
+                <div class="text-xl text-gray-300 my-1">⬇ (Do K.S.F.)</div>
+
+                <!-- Step 2: After KSF -->
+                <div class="flex items-center text-xl font-bold mb-2 bg-white p-2 rounded border border-gray-200">
+                    <div class="text-center"><div class="text-green-600">1</div><div class="h-0.5 w-6 bg-black mx-auto"></div><div>2</div></div>
+                    <div class="mx-2 text-yellow-600">×</div>
+                    <div class="text-center"><div class="text-red-500">8</div><div class="h-0.5 w-6 bg-black mx-auto"></div><div>1</div></div>
+                    <span class="ml-2 text-sm text-gray-400">(We flipped 1/8)</span>
+                </div>
+
+                <!-- Arrow -->
+                <div class="text-xl text-gray-300 my-1">⬇ (Multiply Across)</div>
+
+                <!-- Step 3: Calculation Breakdown -->
+                <div class="w-full bg-blue-50 p-2 rounded text-center">
+                     <div class="flex justify-center items-center text-lg">
+                        <div class="text-right mr-2">
+                            <div>1 × 8 = <strong>8</strong> (Top)</div>
+                            <div class="border-t border-gray-400 my-1 w-full"></div>
+                            <div>2 × 1 = <strong>2</strong> (Bottom)</div>
+                        </div>
+                     </div>
+                     <div class="mt-2 text-xl font-bold">
+                        Result is <span class="text-purple-600">8/2</span>
+                     </div>
+                </div>
+
+                <!-- Step 4: Final Simplify -->
+                <div class="mt-4 bg-purple-100 p-4 rounded-xl w-full text-center border-2 border-purple-200">
+                    <p class="font-bold text-purple-800 mb-2">Last Step: Simplify</p>
+                    <p class="text-lg mb-2">The line means <strong>DIVIDE</strong>.</p>
+                    
+                    <div class="bg-white p-3 rounded-lg inline-block mb-2 shadow-sm border border-purple-100">
+                        <span class="text-gray-500">Top</span> 
+                        <span class="font-bold text-xl mx-1 text-purple-600">÷</span> 
+                        <span class="text-gray-500">Bottom</span>
+                    </div>
+
+                    <div class="text-xl">
+                        8 ÷ 2 = <span class="text-4xl font-bold text-purple-600">4</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2 font-bold">(Because four 2s make 8)</p>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-2 pb-8">
+                <button onclick="nextStep(5)" class="btn-game bg-pastel-green w-full py-4 rounded-xl font-bold text-xl hover:bg-green-200">Start Practice Questions! ➜</button>
+            </div>
+        </div>
+
+        <!-- Question Template (Repeated 10 times via JS) -->
+        <div id="question-container"></div>
+
+        <!-- Completion Screen -->
+        <div id="step-completion" class="step-content hidden p-8 flex-col items-center justify-center h-full text-center space-y-6">
+            <h2 class="text-3xl font-bold text-gray-800">Great Job Gabriel!</h2>
+            <p class="text-xl">You finished the assignment.</p>
+            <div class="w-full bg-yellow-50 border-2 border-yellow-200 p-6 rounded-xl">
+                <p class="text-lg">Score:</p>
+                <div id="final-score" class="text-4xl font-bold text-purple-600 my-2">0 / 10</div>
+            </div>
+            
+            <button onclick="downloadPDF()" class="btn-game bg-pastel-purple text-gray-800 font-bold py-4 px-8 rounded-xl text-xl hover:bg-purple-200 w-full flex items-center justify-center">
+                <span class="mr-2">📄</span> Download My Certificate
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Script -->
+    <script>
+        // --- Game State ---
+        let currentStep = 0;
+        let score = 0;
+        const totalSteps = 4 + 10 + 1; 
+        
+        // --- Accordion Logic ---
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            // Toggle current
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.classList.remove('rotate');
+            } else {
+                // Close others first (optional, but good for focus)
+                document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open'));
+                document.querySelectorAll('.arrow-icon').forEach(el => el.classList.remove('rotate'));
+
+                content.classList.add('open');
+                icon.classList.add('rotate');
+            }
+        }
+        
+        // --- Data: 10 Questions ---
+        const questions = [
+            {
+                id: 5,
+                title: "Question 1",
+                text: "Look at the fraction <strong class='text-2xl'>3/4</strong>.<br>Which number is the <strong>Numerator</strong> (the top number)?",
+                options: ["3", "4"],
+                correct: 0,
+                color: "bg-pastel-blue"
+            },
+            {
+                id: 6,
+                title: "Question 2",
+                text: "Look at the fraction <strong class='text-2xl'>1/8</strong>.<br>Which number is the <strong>Denominator</strong> (the bottom number)?",
+                options: ["1", "8"],
+                correct: 1,
+                color: "bg-pastel-blue"
+            },
+            {
+                id: 7,
+                title: "Question 3",
+                text: "Let's <strong>Add</strong>.<br><div class='text-3xl my-2 font-bold'>2/7 + 3/7</div><br>Remember: Add the top. Keep the bottom.",
+                options: ["5/7", "5/14"],
+                correct: 0,
+                color: "bg-pastel-red"
+            },
+            {
+                id: 8,
+                title: "Question 4",
+                text: "Let's <strong>Add</strong>.<br><div class='text-3xl my-2 font-bold'>1/5 + 1/5</div><br>Tip: 1 + 1 = ?",
+                options: ["2/10", "2/5"],
+                correct: 1,
+                color: "bg-pastel-red"
+            },
+            {
+                id: 9,
+                title: "Question 5",
+                text: "Let's <strong>Subtract</strong>.<br><div class='text-3xl my-2 font-bold'>5/9 - 1/9</div><br>Tip: Only change the top number.",
+                options: ["4/9", "6/9"],
+                correct: 0,
+                color: "bg-pastel-green"
+            },
+            {
+                id: 10,
+                title: "Question 6",
+                text: "Let's <strong>Multiply</strong>.<br><div class='text-3xl my-2 font-bold'>1/2 × 1/3</div><br>Tip: Go straight across. 1×1 on top, 2×3 on bottom.",
+                options: ["1/6", "2/5"],
+                correct: 0,
+                color: "bg-pastel-yellow"
+            },
+            {
+                id: 11,
+                title: "Question 7",
+                text: "Let's <strong>Multiply</strong>.<br><div class='text-3xl my-2 font-bold'>2/3 × 2/3</div><br>Tip: Top × Top. Bottom × Bottom.",
+                options: ["4/6", "4/9"],
+                correct: 1,
+                color: "bg-pastel-yellow"
+            },
+            {
+                id: 12,
+                title: "Question 8",
+                text: "Division Rule.<br>What do we do to the <strong>Second Fraction</strong>?",
+                options: ["Keep it the same", "Flip it (Turn it upside down)"],
+                correct: 1,
+                color: "bg-pastel-orange"
+            },
+            {
+                id: 13,
+                title: "Question 9",
+                text: "Let's practice the <strong>Flip</strong>.<br>If we flip <strong class='text-xl'>3/4</strong>, what does it become?",
+                options: ["3/4", "4/3"],
+                correct: 1,
+                color: "bg-pastel-orange"
+            },
+            {
+                id: 14,
+                title: "Question 10",
+                text: "Final Challenge!<br>Solve: <strong class='text-xl'>2/5 + 1/5</strong>",
+                options: ["3/10", "3/5"],
+                correct: 1,
+                color: "bg-pastel-purple"
+            }
+        ];
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestions();
+            updateProgress();
+        });
+
+        // --- Render Questions ---
+        function renderQuestions() {
+            const container = document.getElementById('question-container');
+            
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.id = `step-${q.id}`;
+                div.className = 'step-content hidden p-8 flex-col h-full space-y-6';
+                div.innerHTML = `
+                    <div class="${q.color} p-2 rounded-t-xl text-center font-bold">Question ${index + 1} of 10</div>
+                    <h2 class="text-xl text-center leading-relaxed">${q.text}</h2>
+                    
+                    <div class="grid grid-cols-1 gap-4 mt-4 w-full">
+                        <button onclick="handleAnswer(${q.id}, 0, ${q.correct})" 
+                            class="answer-btn btn-game bg-gray-100 hover:bg-gray-200 rounded-xl p-4 w-full text-center font-bold">
+                            ${q.options[0]}
+                        </button>
+                        <button onclick="handleAnswer(${q.id}, 1, ${q.correct})" 
+                            class="answer-btn btn-game bg-gray-100 hover:bg-gray-200 rounded-xl p-4 w-full text-center font-bold">
+                            ${q.options[1]}
+                        </button>
+                    </div>
+
+                    <div id="feedback-${q.id}" class="hidden mt-4 p-4 rounded-xl text-center font-bold"></div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- Navigation Logic ---
+        function nextStep(stepId) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show new step
+            const nextEl = document.getElementById(`step-${stepId}`);
+            if (nextEl) {
+                nextEl.classList.remove('hidden');
+                nextEl.classList.add('flex');
+                currentStep = stepId;
+                updateProgress();
+            } else {
+                // End of game
+                showCompletion();
+            }
+        }
+
+        function updateProgress() {
+            // Mapping steps to progress percentage
+            // Steps 0-4 are Intro (20%)
+            // Steps 5-14 are Questions (80%)
+            let pct = 0;
+            if (currentStep <= 4) {
+                pct = (currentStep / 4) * 20;
+            } else if (currentStep <= 14) {
+                pct = 20 + ((currentStep - 4) / 10) * 80;
+            } else {
+                pct = 100;
+            }
+            document.getElementById('progress-fill').style.width = `${pct}%`;
+        }
+
+        // --- Answer Logic ---
+        function handleAnswer(stepId, selectedIndex, correctIndex) {
+            const feedbackEl = document.getElementById(`feedback-${stepId}`);
+            const buttons = document.querySelectorAll(`#step-${stepId} .answer-btn`);
+            
+            // Disable buttons to prevent double click
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === correctIndex) {
+                score++;
+                feedbackEl.textContent = "Correct! Good job.";
+                feedbackEl.className = "mt-4 p-4 rounded-xl text-center font-bold bg-green-100 text-green-700 block";
+                buttons[selectedIndex].classList.add('bg-green-200', 'border-green-400');
+            } else {
+                feedbackEl.textContent = "Nice try! Let's keep going.";
+                feedbackEl.className = "mt-4 p-4 rounded-xl text-center font-bold bg-orange-100 text-orange-700 block";
+                buttons[selectedIndex].classList.add('bg-orange-200', 'border-orange-400');
+            }
+
+            // Auto advance after short delay
+            setTimeout(() => {
+                if (stepId < 14) {
+                    nextStep(stepId + 1);
+                } else {
+                    showCompletion();
+                }
+            }, 1500);
+        }
+
+        function showCompletion() {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            const finalEl = document.getElementById('step-completion');
+            finalEl.classList.remove('hidden');
+            finalEl.classList.add('flex');
+            document.getElementById('final-score').textContent = `${score} / 10`;
+            document.getElementById('progress-fill').style.width = '100%';
+        }
+
+        // --- PDF Generation ---
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const studentName = "Gabriel Mendoza";
+            const today = new Date().toLocaleDateString();
+
+            // Styling for PDF
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(24);
+            doc.setTextColor(80, 80, 80);
+            
+            // Title
+            doc.text("Math Assignment Certificate", 105, 40, { align: "center" });
+            
+            // Line
+            doc.setLineWidth(1);
+            doc.setDrawColor(200, 200, 200);
+            doc.line(20, 50, 190, 50);
+
+            // Details
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(16);
+            
+            doc.text(`Student Name:`, 20, 70);
+            doc.setFont("helvetica", "bold");
+            doc.text(studentName, 70, 70);
+
+            doc.setFont("helvetica", "normal");
+            doc.text(`Date:`, 20, 85);
+            doc.text(today, 70, 85);
+
+            doc.text(`Topic:`, 20, 100);
+            doc.text("Fractions (Add, Subtract, Multiply, Divide)", 70, 100);
+
+            // Score Box
+            doc.setFillColor(240, 240, 255);
+            doc.roundedRect(20, 120, 170, 40, 3, 3, "F");
+            
+            doc.setFontSize(18);
+            doc.setTextColor(100, 100, 200);
+            doc.text(`Final Score: ${score} / 10`, 105, 145, { align: "center" });
+
+            // Encouragement
+            doc.setFontSize(14);
+            doc.setTextColor(50, 50, 50);
+            doc.text("Excellent effort following the steps!", 105, 180, { align: "center" });
+
+            // Save
+            doc.save("Gabriel_Fractions_Assignment.pdf");
+        }
+    </script>
+</body>
+</html>
